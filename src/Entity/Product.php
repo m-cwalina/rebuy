@@ -25,14 +25,18 @@ class Product
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $price = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="product")
-     */
+    // /**
+    //  * @ORM\OneToMany(targetEntity=Category::class, mappedBy="product")
+    //  */
+
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: "product")]
     private $categories;
 
-    /**
-     * @ORM\OneToMany(targetEntity=EANCode::class, mappedBy="product")
-     */
+    // /**
+    //  * @ORM\OneToMany(targetEntity=EANCode::class, mappedBy="product")
+    //  */
+
+    #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product")]
     private $eanCodes;
 
     public function __construct()

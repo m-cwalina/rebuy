@@ -16,10 +16,14 @@ class EANCode
     #[ORM\Column(length: 255)]
     private ?string $code = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="eanCodes")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    // /**
+    //  * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="eanCodes")
+    //  * @ORM\JoinColumn(nullable=false)
+    //  */
+
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes")]
+    #[ORM\JoinColumn(nullable: false)]
+
     private $product;
 
     public function getId(): ?int

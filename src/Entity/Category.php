@@ -16,10 +16,14 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $category = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="categories")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    // /**
+    //  * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="categories")
+    //  * @ORM\JoinColumn(nullable=false)
+    //  */
+
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "categories")]
+    #[ORM\JoinColumn(nullable: false)]
+
     private $product;
 
     public function getId(): ?int
