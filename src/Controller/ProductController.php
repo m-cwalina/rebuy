@@ -9,47 +9,27 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/products')]
 class ProductController extends AbstractController
 {
     private $entityManager;
+    private $serializer;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
         $this->entityManager = $entityManager;
+        $this->serializer = $serializer;
     }
 
 #[Route('', methods: ['GET'])]
 public function index(): JsonResponse
 {
     $products = $this->entityManager->getRepository(Product::class)->findAll();
-    $data = [];
-    foreach ($products as $product) {
-        // Fetch related categories and EANCodes for each product
-        $categories = $product->getCategories();
-        $categoryNames = [];
-        foreach ($categories as $category) {
-            $categoryNames[] = $category->getCategory();  // assuming getCategory() returns the name or title of the category
-        }
+    $data = $this->serializer->serialize($products, 'json');
 
-        $eanCodes = $product->getEanCodes();
-        $eanCodeValues = [];
-        foreach ($eanCodes as $eanCode) {
-            $eanCodeValues[] = $eanCode->getCode();  // assuming getCode() returns the EAN code value
-        }
-
-        $data[] = [
-            'id' => $product->getId(),
-            'name' => $product->getName(),
-            'manufacturer' => $product->getManufacturer(),
-            'price' => $product->getPrice(),
-            'categories' => $categoryNames,   // Add categories to the product data
-            'eanCodes' => $eanCodeValues,     // Add EANCodes to the product data
-            // Add more fields as needed
-        ];
-    }
-    return new JsonResponse($data);
+    return new JsonResponse($data, 200, [], true);
 }
 
     #[Route('/{id}', methods: ['GET'])]

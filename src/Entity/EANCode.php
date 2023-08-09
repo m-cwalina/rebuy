@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\EANCodeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EANCodeRepository::class)]
 class EANCode
@@ -11,18 +12,18 @@ class EANCode
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["product:read"])]
+
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $code = null;
+    #[Groups(["product:read"])]
 
-    // /**
-    //  * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="eanCodes")
-    //  * @ORM\JoinColumn(nullable=false)
-    //  */
+    private ?string $code = null;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes")]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["product:read"])]
 
     private $product;
 
