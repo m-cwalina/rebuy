@@ -13,18 +13,14 @@ class EANCode
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(["product:read"])]
-
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["product:read"])]
-
     private ?string $code = null;
 
-    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes")]
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes", fetch: "EAGER")]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["product:read"])]
-
     private $product;
 
     public function getId(): ?int

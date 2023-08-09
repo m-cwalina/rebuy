@@ -16,33 +16,27 @@ class Product
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(["product:read"])]
-
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["product:read"])]
-
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["product:read"])]
-
     private ?string $manufacturer = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Groups(["product:read"])]
-
     private ?string $price = null;
 
 
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: "product")]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: "product", fetch: "EAGER")]
     #[Groups(["product:read"])]
-
     private $categories;
 
-    #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product")]
+    #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product", fetch: "EAGER")]
     #[Groups(["product:read"])]
-
     private $eanCodes;
 
     public function __construct()
