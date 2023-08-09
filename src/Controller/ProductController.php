@@ -83,26 +83,63 @@ public function index(): JsonResponse
     $this->entityManager->persist($product);
     $this->entityManager->flush();
 
-    return new JsonResponse(['id' => $product->getId()], Response::HTTP_CREATED);
+    $responseData = $this->serializer->serialize($product, 'json', ['groups' => 'product:read']);
+    return new JsonResponse($responseData, Response::HTTP_CREATED, [], true);
+
 }
 
     #[Route('/{id}', methods: ['PUT', 'PATCH'])]
     public function update(int $id, Request $request): JsonResponse
-    {
-        $product = $this->entityManager->getRepository(Product::class)->find($id);
-        if (!$product) {
-            return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
+{
+    $product = $this->entityManager->getRepository(Product::class)->find($id);
+    if (!$product) {
+        return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
+    }
+
+    $data = json_decode($request->getContent(), true);
+
+    $product->setName($data['name']);
+    $product->setManufacturer($data['manufacturer']);
+    $product->setPrice($data['price']);
+
+    if (isset($data['categories'])) {
+        foreach ($product->getCategories() as $existingCategory) {
+            if (!in_array($existingCategory->getCategory(), $data['categories'], true)) {
+                $product->removeCategory($existingCategory);
+            }
         }
 
-        $data = json_decode($request->getContent(), true);
-        $product->setName($data['name']);
-        $product->setManufacturer($data['manufacturer']);
-        $product->setPrice($data['price']);
-
-        $this->entityManager->flush();
-
-        return new JsonResponse(['message' => 'Product updated']);
+        foreach ($data['categories'] as $categoryName) {
+            $category = $this->entityManager->getRepository(Category::class)->findOneBy(['category' => $categoryName]);
+            if (!$category) {
+                $category = new Category();
+                $category->setCategory($categoryName);
+                $product->addCategory($category);
+            }
+        }
     }
+
+    if (isset($data['eanCodes'])) {
+        foreach ($product->getEANCodes() as $existingEANCode) {
+            if (!in_array($existingEANCode->getCode(), $data['eanCodes'], true)) {
+                $product->removeEANCode($existingEANCode);
+            }
+        }
+
+        foreach ($data['eanCodes'] as $code) {
+            $eanCode = $this->entityManager->getRepository(EANCode::class)->findOneBy(['code' => $code]);
+            if (!$eanCode) {
+                $eanCode = new EANCode();
+                $eanCode->setCode($code);
+                $product->addEANCode($eanCode);
+            }
+        }
+    }
+
+    $this->entityManager->flush();
+
+    return new JsonResponse(['message' => 'Product updated']);
+}
 
     #[Route('/{id}', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse

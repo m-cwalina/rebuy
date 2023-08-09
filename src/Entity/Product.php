@@ -31,11 +31,11 @@ class Product
     private ?string $price = null;
 
 
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: "product", fetch: "EAGER")]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: "product", fetch: "EAGER", cascade: ['persist', 'remove'])]
     #[Groups(["product:read"])]
     private $categories;
 
-    #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product", fetch: "EAGER")]
+    #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product", fetch: "EAGER", cascade: ['persist', 'remove'])]
     #[Groups(["product:read"])]
     private $eanCodes;
 
