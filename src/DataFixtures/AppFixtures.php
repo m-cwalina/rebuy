@@ -12,22 +12,39 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $category = new Category();
-        $category->setCategory('Electronics');
-        $manager->persist($category);
+        $category1 = new Category();
+        $category1->setCategory('Electronics');
+        $manager->persist($category1);
 
-        $product = new Product();
-        $product->setName('Smartphone');
-        $product->setPrice(132.10);
-        $product->setManufacturer('Apple');
-        $product->addCategory($category);
-        $manager->persist($product);
+        $category2 = new Category();
+        $category2->setCategory('Apparel');
+        $manager->persist($category2);
 
-        $eanCode = new EANCode();
-        $eanCode->setCode('1234567890123');
-        $eanCode->setProduct($product);
-        $manager->persist($eanCode);
+        $product1 = new Product();
+        $product1->setName('iPhone 14')
+                 ->setManufacturer('Apple')
+                 ->setPrice('999.99')
+                 ->addCategory($category1);
+        $manager->persist($product1);
+
+        $product2 = new Product();
+        $product2->setName('T-Shirt')
+                 ->setManufacturer('Uniqlo')
+                 ->setPrice('29.99')
+                 ->addCategory($category2);
+        $manager->persist($product2);
+
+        $ean1 = new EANCode();
+        $ean1->setCode('1234567890123')
+             ->setProduct($product1);
+        $manager->persist($ean1);
+
+        $ean2 = new EANCode();
+        $ean2->setCode('2345678901234')
+             ->setProduct($product2);
+        $manager->persist($ean2);
 
         $manager->flush();
     }
+
 }

@@ -157,32 +157,27 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["product:read"])]
+    #[Groups(["category:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["product:read"])]
+    #[Groups(["category:read", "category:write"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["product:read"])]
+    #[Groups(["category:read", "category:write"])]
     private ?string $manufacturer = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Groups(["product:read"])]
+    #[Groups(["category:read", "category:write"])]
     private ?string $price = null;
 
-
-     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: "products")]
-     #[ORM\JoinTable(name: "product_category")]
-     #[Groups(["product:read"])]
-
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: "products", fetch: "EAGER", cascade: ['persist'])]
+    #[ORM\JoinTable(name: "product_category")]
     private $categories;
 
-
-     #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product", fetch: "EAGER", cascade: ["persist", "remove"])]
-     #[Groups(["product:read"])]
-
+     #[ORM\OneToMany(targetEntity: EANCode::class, mappedBy: "product", fetch: "EAGER", cascade: ["persist", "remove", 'merge'])]
+     #[Groups(["category:read", "category:write"])]
     private $eanCodes;
 
     public function __construct()

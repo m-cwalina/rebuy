@@ -63,17 +63,14 @@ class EANCode
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["product:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["product:read"])]
+    #[Groups(["category:read", "category:write"])]
     private ?string $code = null;
 
-
-     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes", fetch: "EAGER")]
-     #[ORM\JoinColumn(nullable: false)]
-     #[Groups(["product:read"])]
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes", cascade: ['persist', 'remove', 'merge'])]
+    #[ORM\JoinColumn(nullable: false)]
     private $product;
 
     public function getId(): ?int
