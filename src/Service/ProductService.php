@@ -32,7 +32,6 @@ class ProductService
     {
         $products = $this->productRepository->findAll();
 
-        // Organize products by categories
         $categorizedProducts = [];
         foreach ($products as $product) {
             foreach ($product->getCategories() as $category) {
@@ -52,7 +51,7 @@ class ProductService
         return $this->serializer->serialize($categorizedProducts, 'json', $context);
     }
 
-    public function getProductById(int $id): ?array
+    public function getProductById(int $id): string
     {
       $product = $this->productRepository->find($id);
       if (!$product) {
@@ -63,35 +62,34 @@ class ProductService
         return $object->getId();
       }];
 
-      $data = $this->serializer->serialize($product, 'json', $context);
-      return ['data' => $data];
+      return $this->serializer->serialize($product, 'json', $context);
     }
 
-    public function createProduct(string $data): Product
+    public function createProduct(string $data): String
     {
-        $context = ['groups' => ['category:write', 'category:read', 'product:read', 'product:write']];
-        $product = $this->serializer->deserialize($data, Product::class, 'json', $context);
+      $context = ['groups' => ['category:write', 'category:read', 'product:read', 'product:write']];
+      $product = $this->serializer->deserialize($data, Product::class, 'json', $context);
 
-        $errors = $this->validator->validate($product);
-        if (count($errors) > 0) {
-            $errorMessages = [];
-            foreach ($errors as $violation) {
-                $errorMessages[] = $violation->getMessage();
-            }
-            throw new \Exception(json_encode($errorMessages));
-        }
+      $errors = $this->validator->validate($product);
+      if (count($errors) > 0) {
+          $errorMessages = [];
+          foreach ($errors as $violation) {
+              $errorMessages[] = $violation->getMessage();
+          }
+          throw new \Exception(json_encode($errorMessages));
+      }
 
-        foreach ($product->getEANCodes() as $eanCode) {
-            $eanCode->setProduct($product);
-        }
+      foreach ($product->getEANCodes() as $eanCode) {
+          $eanCode->setProduct($product);
+      }
 
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
+      $this->entityManager->persist($product);
+      $this->entityManager->flush();
 
-        return $product;
+      return $this->serializer->serialize($product, 'json', $context);
     }
 
-    public function updateProduct(int $id, string $content)
+    public function updateProduct(int $id, string $content): String
     {
       $product = $this->productRepository->find($id);
 
@@ -118,7 +116,7 @@ class ProductService
       $this->entityManager->persist($product);
       $this->entityManager->flush();
 
-      return $product;
+      return $this->serializer->serialize($product, 'json', $context);
     }
 
     public function deleteProduct(int $id): ?Product
@@ -132,11 +130,5 @@ class ProductService
         $this->entityManager->flush();
 
         return $product;
-    }
-
-    public function serializeProduct(Product $product): string
-    {
-      $context = ['groups' => ['category:read', 'category:write', 'product:read', 'product:write']];
-      return $this->serializer->serialize($product, 'json', $context);
     }
 }
