@@ -32,7 +32,8 @@ class Product
     #[Assert\NotBlank(message: "Price cannot be blank.")]
     private ?string $price = null;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: "products", fetch: "EAGER", cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: "products", fetch: "EAGER", cascade: ['persist', 'remove', 'merge'])]
+    #[Groups(["product:read", "product:write"])]
     #[ORM\JoinTable(name: "product_category")]
     private $categories;
 

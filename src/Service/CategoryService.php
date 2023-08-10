@@ -8,6 +8,10 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use App\Entity\Category;
+use App\Entity\Product;
+use App\Entity\EANCode;
+
+use App\Repository\ProductRepository;
 
 class CategoryService
 {
@@ -15,10 +19,12 @@ class CategoryService
     private $entityManager;
     private $serializer;
     private $validator;
+    private $productRepository;
 
-    public function __construct(CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function __construct(CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator, ProductRepository $productRepository)
     {
         $this->categoryRepository = $categoryRepository;
+        $this->productRepository = $productRepository;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -39,7 +45,7 @@ class CategoryService
               ];
           }
 
-          $groupedCategories[$key]['id'][] = $category->getId();
+          // $groupedCategories[$key]['id'][] = $category->getId();
 
           foreach ($category->getProducts() as $product) {
               $groupedCategories[$key]['products'][] = $product;
@@ -142,5 +148,11 @@ class CategoryService
     {
       $context = ['groups' => ['category:read']];
       return $this->serializer->serialize($category, 'json', $context);
+    }
+
+    public function serializeProduct(Product $product): string
+    {
+      $context = ['groups' => ['category:read', 'category:write', 'product:read', 'product:write']];
+      return $this->serializer->serialize($product, 'json', $context);
     }
 }

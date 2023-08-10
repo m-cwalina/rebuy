@@ -18,16 +18,14 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["category:read", 'category:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Category cannot be blank.")]
     #[Groups(["category:read", "category:write"])]
+    #[Assert\NotBlank(message: "Category cannot be blank.")]
     private ?string $category = null;
 
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: "categories", fetch: "EAGER", cascade: ['persist'])]
-    #[Groups(["category:read", "category:write"])]
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: "categories", fetch: "EAGER", cascade: ['persist', 'merge', 'remove'])]
     #[Assert\Valid]
     private $products;
 
