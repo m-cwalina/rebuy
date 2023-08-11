@@ -66,7 +66,10 @@ class ProductService
 
     public function createProduct(string $data): String
     {
-      $context = ['groups' => ['category:write', 'category:read', 'product:read', 'product:write']];
+
+      $context = ['groups' => ['category:read', 'category:write', 'product:read', 'product:write'], 'circular_reference_handler' => function ($object) {
+        return $object->getId();
+      }];
       $product = $this->serializer->deserialize($data, Product::class, 'json', $context);
 
       $errors = $this->validator->validate($product);
@@ -94,8 +97,6 @@ class ProductService
       if (!$product) {
           throw new \Exception('Product not found');
       }
-
-      // $context = ['groups' => ['category:write', 'category:read', 'product:write', 'product:read'], 'object_to_populate' => $product];
 
       $context = ['groups' => ['category:read', 'category:write', 'product:read', 'product:write'], 'circular_reference_handler' => function ($object) {
         return $object->getId();

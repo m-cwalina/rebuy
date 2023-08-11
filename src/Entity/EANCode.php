@@ -21,8 +21,8 @@ class EANCode
     private ?string $code = null;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "eanCodes", cascade: ["persist", "remove", 'merge'])]
-    #[ORM\JoinColumn(nullable: false)]
     #[Groups(["category:read", "category:write"])]
+    #[ORM\JoinColumn(nullable: false)]
     private $product;
 
     public function getId(): ?int
