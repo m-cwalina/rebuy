@@ -36,7 +36,6 @@ class ProductService
         foreach ($products as $product) {
             foreach ($product->getCategories() as $category) {
                 $categoryName = $category->getCategory();
-                $categorizedProducts[$categoryName]['category'] = $categoryName;
                 $categorizedProducts[$categoryName]['products'][] = $product;
             }
         }
@@ -51,11 +50,11 @@ class ProductService
         return $this->serializer->serialize($categorizedProducts, 'json', $context);
     }
 
-    public function getProductById(int $id): string
+    public function getProductById(int $id): String
     {
       $product = $this->productRepository->find($id);
       if (!$product) {
-          return null;
+          return 'No product';
       }
 
       $context = ['groups' => ['category:read', 'category:write', 'product:read', 'product:write'], 'circular_reference_handler' => function ($object) {
@@ -92,12 +91,15 @@ class ProductService
     public function updateProduct(int $id, string $content): String
     {
       $product = $this->productRepository->find($id);
-
       if (!$product) {
           throw new \Exception('Product not found');
       }
 
-      $context = ['groups' => ['category:write', 'category:read', 'product:write', 'product:read'], 'object_to_populate' => $product];
+      // $context = ['groups' => ['category:write', 'category:read', 'product:write', 'product:read'], 'object_to_populate' => $product];
+
+      $context = ['groups' => ['category:read', 'category:write', 'product:read', 'product:write'], 'circular_reference_handler' => function ($object) {
+        return $object->getId();
+      }];
       $product = $this->serializer->deserialize($content, Product::class, 'json', $context);
 
       $errors = $this->validator->validate($product);
